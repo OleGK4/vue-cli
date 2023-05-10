@@ -49,14 +49,19 @@
 export default {
   name: 'appRegister',
   computed: {
-    isSubmitting(){
+    isSubmitting() {
       return this.$store.state.auth.isSubmitting
     }
   },
   methods: {
     onSubmit() {
       console.log('submitted form')
-      this.$store.commit('registerStart')
+      this.$store.dispatch('register', {
+        email: "sdfgsdfg@gmail.com",
+        username: "dsfgsfdg",
+        fio: "adfgadsf afdg adf",
+        password: "gfhsjsdhersfg"
+      })
     }
   }
 }
