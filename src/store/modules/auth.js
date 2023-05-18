@@ -1,4 +1,5 @@
 import authApi from "@/api/auth";
+import { setItem } from "@/helpers/persistanceStorage";
 
 const state = {
   isSubmitting: false,
@@ -71,7 +72,6 @@ const actions = {
       authApi
         .register(credentials)
         .then((response) => {
-          console.log("response", response);
           context.commit(
             mutationTypes.registerSuccess,
             response.data.data.user_token
@@ -79,7 +79,6 @@ const actions = {
           setItem("accessToken", response.data.data.user_token);
         })
         .catch((result) => {
-          console.log("result errors", result);
           context.commit(
             mutationTypes.registerFailure,
             result.response.data.error.errors
@@ -100,8 +99,16 @@ const actions = {
           setItem("accessToken", response.data.data.user_token);
         })
         .catch((result) => {
-          const errorMessages = result.response.data.error.message;
-          context.commit(mutationTypes.registerFailure, errorMessages);
+          if (
+            result.response &&
+            result.response.data &&
+            result.response.data.error
+          ) {
+            context.commit(
+              mutationTypes.loginFailure,
+              result.response.data.error.message
+            );
+          }
         });
     });
   },
