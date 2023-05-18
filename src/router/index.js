@@ -1,42 +1,36 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router";
 
-// const ifNotAuthenticated = (to, from, next) => {
-//     if (!store.getter.isAuthenticated) {
-//         next();
-//         return;
-//     }
-//     next('/');
-// };
-//
-// const ifAuthenticated = (to, from, next) => {
-//     if (store.getter.isAuthenticated) {
-//         next();
-//         return;
-//     }
-//     next('/login');
-// };
+import About from "@/views/AboutView.vue";
+import Home from "@/views/HomeView.vue";
+import Register from "@/views/Register.vue";
+import Login from "@/views/Login.vue";
 
-const routes = [{
-    path: '/', name: 'home', component: function () {
-        return import('@/views/HomeView');
-    }, // beforeEnter: ifAuthenticated,
-}, {
-    path: '/about', name: 'about', component: function () {
-        return import('@/views/AboutView');
-    }, // beforeEnter: ifAuthenticated,
-}, {
-    path: '/register', name: 'register', component: function () {
-        return import('@/views/Register');
-    }, // beforeEnter: ifAuthenticated,
-},]
-//     path: '/login', name: 'login', component: function () {
-//         return import('@/components/Login');
-//     }, // beforeEnter: ifNotAuthenticated,
-// },]
+const routes = [
+  {
+    path: "/",
+    name: "home",
+    component: Home,
+  },
+  {
+    path: "/about",
+    name: "about",
+    component: About,
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: Register,
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: Login,
+  },
+];
 
 const router = createRouter({
-    history: createWebHistory(process.env.BASE_URL), routes
-})
+  history: createWebHistory(process.env.BASE_URL),
+  routes,
+});
 
-
-export default router
+export default router;
