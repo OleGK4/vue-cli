@@ -2,39 +2,29 @@
   <nav class="navbar navbar-light">
     <div class="container">
       <router-link class="navbar-brand" :to="{name: 'home'}">
-        MediumClone
+        DrugShop
       </router-link>
       <ul class="nav navbar-nav pull-xs-right">
-        <li class="nav-item">
-          <router-link class="nav-link" :to="{name: 'home'}">Home</router-link>
-        </li>
         <template v-if="isLoggedIn">
           <li class="nav-item">
-            <router-link class="nav-link" :to="{name: 'createArticle'}">
-              <i class="ion-compose" />
-              &nbsp; New Article
+            <router-link class="nav-link" :to="{name: 'cart'}">
+              My cart
             </router-link>
           </li>
 
           <li class="nav-item">
-            <router-link class="nav-link" :to="{name: 'settings'}">
-              <i class="ion-gear-a" />
-              &nbsp; Settings
+            <router-link class="nav-link" :to="{name: 'orders'}">
+              My orders
             </router-link>
           </li>
 
           <li class="nav-item">
-            <router-link
-                class="nav-link"
-                :to="{name: 'userProfile', params: {slug: currentUser.username}}"
-            >
-              <img class="user-pic" :src="currentUser.image" />
-              &nbsp;
-              {{ currentUser.username }}
+            <router-link class="nav-link" :to="{name: 'home'}" v-on:click="logOut">
+              Logout
             </router-link>
           </li>
         </template>
-        <template v-if="isAnonymous">
+        <template v-if="!isLoggedIn">
           <li class="nav-item">
             <router-link class="nav-link" :to="{name: 'login'}">
               Sign in
@@ -53,16 +43,22 @@
 
 <script>
 import {mapGetters} from 'vuex'
-import {getterTypes} from '@/store/modules/auth'
+import {actionTypes, getterTypes} from '@/store/modules/auth'
 
 export default {
   name: 'appTopbar',
   computed: {
     ...mapGetters({
-      currentUser: getterTypes.currentUser,
-      isLoggedIn: getterTypes.isLoggedIn,
-      isAnonymous: getterTypes.isAnonymous
+      isLoggedIn: getterTypes.isLoggedIn
     })
+  },
+  methods: {
+    logOut() {
+      this.$store.dispatch(actionTypes.logout)
+          .then(() => {
+            this.$router.push({name: 'home'})
+          })
+    }
   }
 }
 </script>

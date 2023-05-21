@@ -1,13 +1,21 @@
 <template>
   <nav>
-    <router-link :to="{name: 'home'}">Home</router-link>
-    |
-    <router-link :to="{name: 'about'}">About</router-link>
-    |
-    <router-link :to="{name: 'register'}">Register</router-link>
+    <app-topbar></app-topbar>
   </nav>
   <router-view/>
 </template>
+
+<script>
+import appTopbar from '@/components/Topbar'
+
+  export default {
+    name: 'app',
+    components: {
+      appTopbar
+    },
+  }
+
+</script>
 
 <style>
 #app {

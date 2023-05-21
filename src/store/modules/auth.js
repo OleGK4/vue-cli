@@ -15,22 +15,21 @@ export const mutationTypes = {
   loginStart: "[auth] Login start",
   loginSuccess: "[auth] Login success",
   loginFailure: "[auth] Login failure",
+
+  logout: "[auth] Logout",
 };
 
 export const actionTypes = {
   register: "[auth] Register",
   login: "[auth] Login",
+  logout: "[auth] Logout",
 };
 
 export const getterTypes = {
-  currentUser: "[auth] currentUser",
   isLoggedIn: "[auth] isLoggedIn",
 };
 
 const getters = {
-  [getterTypes.currentUser]: (state) => {
-    return state.currentUser;
-  },
   [getterTypes.isLoggedIn]: (state) => {
     return Boolean(state.isLoggedIn);
   },
@@ -62,6 +61,9 @@ const mutations = {
   [mutationTypes.loginFailure](state, payload) {
     state.isSubmitting = false;
     state.validationErrors = payload;
+  },
+  [mutationTypes.logout](state) {
+    state.isLoggedIn = false;
   },
 };
 
@@ -110,6 +112,11 @@ const actions = {
             );
           }
         });
+    });
+  },
+  [actionTypes.logout](context) {
+    return new Promise((resolve) => {
+      context.commit(mutationTypes.logout);
     });
   },
 };
