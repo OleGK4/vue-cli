@@ -5,7 +5,7 @@ axios.defaults.baseURL = "https://jurapro.bhuser.ru/api-shop";
 
 axios.interceptors.request.use((config) => {
   const token = getItem("accessToken");
-  config.headers.Authorization = token ? `Token ${token}` : "";
+  config.headers.Authorization = token ? `Bearer ${token}` : "";
   return config;
 });
 

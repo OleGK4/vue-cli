@@ -1,10 +1,11 @@
 import authApi from "@/api/auth";
-import { setItem } from "@/helpers/persistanceStorage";
+import { removeItem, setItem } from "@/helpers/persistanceStorage";
 
 const state = {
   isSubmitting: false,
   isLoggedIn: null,
   validationErrors: null,
+  currentUserToken: null,
 };
 
 export const mutationTypes = {
@@ -16,7 +17,9 @@ export const mutationTypes = {
   loginSuccess: "[auth] Login success",
   loginFailure: "[auth] Login failure",
 
-  logout: "[auth] Logout",
+  logoutStart: "[auth] Logout start",
+  logoutSuccess: "[auth] Logout success",
+  logoutFailure: "[auth] Logout failure",
 };
 
 export const actionTypes = {
@@ -62,8 +65,18 @@ const mutations = {
     state.isSubmitting = false;
     state.validationErrors = payload;
   },
-  [mutationTypes.logout](state) {
+  [mutationTypes.logoutStart](state) {
+    state.isSubmitting = true;
+    state.validationErrors = null;
+  },
+  [mutationTypes.logoutSuccess](state) {
+    state.currentUserToken = null;
     state.isLoggedIn = false;
+    state.isSubmitting = false;
+  },
+  [mutationTypes.logoutFailure](state, payload) {
+    state.isSubmitting = false;
+    state.validationErrors = payload;
   },
 };
 
@@ -116,7 +129,25 @@ const actions = {
   },
   [actionTypes.logout](context) {
     return new Promise((resolve) => {
-      context.commit(mutationTypes.logout);
+      context.commit(mutationTypes.logoutStart);
+      authApi
+        .logout()
+        .then((response) => {
+          context.commit(mutationTypes.logoutSuccess);
+          removeItem("accessToken");
+        })
+        .catch((result) => {
+          if (
+            result.response &&
+            result.response.data &&
+            result.response.data.error
+          ) {
+            context.commit(
+              mutationTypes.logoutFailure,
+              result.response.data.error.message
+            );
+          }
+        });
     });
   },
 };

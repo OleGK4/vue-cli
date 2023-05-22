@@ -3,7 +3,7 @@
     <h1>All stuff here!</h1>
   </div>
   <div class="col-md-9">
-    <mcv-feed :api-url="apiUrl"></mcv-feed>
+    <products :api-url="apiUrl"></products>
   </div>
 </template>
 
@@ -17,7 +17,7 @@ export default {
   },
   data() {
     return {
-      apiUrl: '/articles'
+      apiUrl: '/products'
     }
   }
 }
