@@ -82,7 +82,7 @@ const mutations = {
 
 const actions = {
   [actionTypes.register](context, credentials) {
-    return new Promise(() => {
+    return new Promise((resolve) => {
       context.commit(mutationTypes.registerStart);
       authApi
         .register(credentials)
@@ -92,6 +92,7 @@ const actions = {
             response.data.data.user_token
           );
           setItem("accessToken", response.data.data.user_token);
+          resolve(response.data.data.user_token);
         })
         .catch((result) => {
           context.commit(
@@ -112,6 +113,7 @@ const actions = {
             response.data.data.user_token
           );
           setItem("accessToken", response.data.data.user_token);
+          resolve(response.data.data.user_token);
         })
         .catch((result) => {
           if (
@@ -135,6 +137,7 @@ const actions = {
         .then((response) => {
           context.commit(mutationTypes.logoutSuccess);
           removeItem("accessToken");
+          resolve();
         })
         .catch((result) => {
           if (

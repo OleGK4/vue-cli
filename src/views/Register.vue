@@ -13,7 +13,7 @@
               v-if="validationErrors"
               :validation-errors="validationErrors"
           ></app-validation-errors>
-          <form @submit.prevent="onSubmit">
+          <form v-on:submit.prevent="onSubmit">
             <fieldset class="form-group">
               <input
                   class="form-control form-control-lg"
