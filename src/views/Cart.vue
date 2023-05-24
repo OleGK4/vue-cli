@@ -1,10 +1,16 @@
 <template>
   <h1>Your cart!</h1>
+  <user-cart></user-cart>
 </template>
 
 <script>
+import UserCart from '@/components/UserCart'
+
 export default {
-  name: "Cart"
+  name: "Cart",
+  components: {
+    UserCart,
+  }
 }
 </script>
 

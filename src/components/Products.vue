@@ -2,17 +2,26 @@
   <h2>Product render</h2>
   <div>
     <div v-if="isLoading">Loading...</div>
+    <ul v-if="message">
+      <li class="success">{{ message }}</li>
+    </ul>
     <div v-if="error">Something bad happened</div>
     <div v-if="products">
       <div class="article-preview" v-for="(product, index) in products.data" :key="index" >
         <h3>{{ product.name }}</h3>
         <p>{{ product.description }}</p>
         <p>Price: {{ product.price }}</p>
-        <button :disabled="!isLoggedIn">Add to Cart</button>
+        <p>ID: {{ product.id }}</p>
+        <button
+            :disabled="!isLoggedIn"
+            v-on:click="addProduct(product.id)"
+        >
+          Add to Cart
+        </button>
       </div>
     </div>
   </div>
-<!--  Намного позже понял, что пагинации на backend нет и мостить пагинацию на front-end - костыль,
+<!--  Намного позже понял, что пагинации на back-end нет и мостить пагинацию на front-end - костыль,
       потому пагинация и не работает от слова совсем, всегда возвращается полный массив объектов, имеющий в себе
       уже использованные в отображении данные-->
   <app-pagination
@@ -54,7 +63,8 @@ export default {
     ...mapState({
       isLoading: state => state.products.isLoading,
       products: state => state.products.data,
-      error: state => state.products.error
+      error: state => state.products.error,
+      message: state => state.products.message,
     }),
     limit() {
       return limit
@@ -98,32 +108,16 @@ export default {
             console.error(error)
             this.error = true
           })
+    },
+    addProduct(productId) {
+      this.$store.dispatch(actionTypes.addToCart, productId)
+          .catch(error => {
+            console.error(error)
+            this.error = true
+          })
     }
   }
 }
 </script>
 <style>
-.info {
-  color: #fff;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-h3 {
-  color: #000;
-  margin-bottom: 5px;
-}
-
-p {
-  color: #000;
-  margin-bottom: 5px;
-}
-
-button {
-  background-color: #5cb85c;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-}
 </style>

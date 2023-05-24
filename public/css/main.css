@@ -1,0 +1,32 @@
+.info {
+    color: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+ul, li{
+    text-decoration: none;
+    list-style: none;
+}
+h3 {
+    color: #000;
+    margin-bottom: 5px;
+}
+
+p {
+    color: #000;
+    margin-bottom: 5px;
+}
+
+button {
+    background-color: #5cb85c;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+.success {
+    color: #5cb85c;
+}
+.failed {
+    color: brown;
+}
