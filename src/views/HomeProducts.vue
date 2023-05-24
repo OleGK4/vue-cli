@@ -2,8 +2,8 @@
   <div class="home">
     <h1>All stuff here!</h1>
   </div>
-  <div class="col-md-9">
-    <products :api-url="apiUrl"></products>
+  <div class="d-flex justify-content-center">
+      <products :api-url="apiUrl"></products>
   </div>
 </template>
 
@@ -11,7 +11,7 @@
 import Products from '@/components/Products.vue'
 
 export default {
-  name: 'AppGlobalFeed',
+  name: 'appProducts',
   components: {
     Products
   },

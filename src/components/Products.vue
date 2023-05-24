@@ -1,56 +1,43 @@
 <template>
   <h2>Product render</h2>
-  <button v-on:click="asd">
-    Click to check
-  </button>
   <div>
     <div v-if="isLoading">Loading...</div>
-    <div v-if="error">Something bad happend</div>
+    <div v-if="error">Something bad happened</div>
     <div v-if="products">
-      <div
-          class="article-preview"
-          v-for="(product, index) in products"
-          :key="index"
-      >
-        <div class="article-meta">
-          <div class="info">
-            <p>{{ product.name }}</p>
-            <p>{{ product.description }}</p>
-            <p>{{ product.price }}</p>
-          </div>
-          <div class="pull-xs-right">ADD TO CART</div>
-        </div>
-<!--        <app-pagination-->
-<!--            :total="feed.articlesCount"-->
-<!--            :limit="limit"-->
-<!--            :url="baseUrl"-->
-<!--            :current-page="currentPage"-->
-<!--        >-->
-<!--        </app-pagination>-->
+      <div class="article-preview" v-for="(product, index) in products.data" :key="index" >
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.description }}</p>
+        <p>Price: {{ product.price }}</p>
+        <button :disabled="!isLoggedIn">Add to Cart</button>
       </div>
     </div>
   </div>
-
-
-
-
+<!--  Намного позже понял, что пагинации на backend нет и мостить пагинацию на front-end - костыль,
+      потому пагинация и не работает от слова совсем, всегда возвращается полный массив объектов, имеющий в себе
+      уже использованные в отображении данные-->
+  <app-pagination
+      :total="totalCount"
+      :limit="limit"
+      :url="baseUrl"
+      :current-page="currentPage"
+  >
+  </app-pagination>
 </template>
 
+
+
 <script>
-import {mapState} from 'vuex'
-import parseUrl from 'query-string'
-import stringify from 'query-string'
+import {mapGetters, mapState} from 'vuex'
+import queryString from 'query-string'
 
 import {actionTypes} from '@/store/modules/products'
+
+import {getterTypes} from '@/store/modules/auth'
 import AppPagination from '@/components/Pagination'
 import {limit} from '@/helpers/vars'
 
 export default {
   name: 'Products',
-
-
-
-
   components: {
     AppPagination
   },
@@ -60,31 +47,10 @@ export default {
       required: true
     }
   },
-  // data() {
-  //   return {
-  //     products: [
-  //       {
-  //         id: 1,
-  //         name: 'Product name1111111',
-  //         description: 'Product description',
-  //         price: 'Product price',
-  //       },
-  //       {
-  //         id: 2,
-  //         name: 'Product name2222222',
-  //         description: 'Product description',
-  //         price: 'Product price',
-  //       },
-  //       {
-  //         id: 3,
-  //         name: 'Product name33333333',
-  //         description: 'Product description',
-  //         price: 'Product price',
-  //       }
-  //     ]
-  //   }
-  // },
   computed: {
+    ...mapGetters({
+      isLoggedIn: getterTypes.isLoggedIn
+    }),
     ...mapState({
       isLoading: state => state.products.isLoading,
       products: state => state.products.data,
@@ -103,8 +69,12 @@ export default {
       return this.currentPage * limit - limit
     },
     totalCount() {
-      return this.products.length // Счётчик элементов массива - элемент, где элемент - продукт, потом передаётся через свойства в компонент пагинации
-    }
+      if (this.products && this.products.data) { // Счётчик элементов массива - элемент, где элемент - продукт, потом передаётся через свойства в компонент пагинации
+        return this.products.data.length
+      } else {
+        return 0
+      }
+    },
   },
   watch: {
     currentPage() {
@@ -116,15 +86,44 @@ export default {
   },
   methods: {
     fetchProducts() {
-      const parsedUrl = parseUrl(this.apiUrl)
-      const stringifiedParams = stringify({
+      const parsedUrl = queryString.parseUrl(this.apiUrl)
+      const stringifiedParams = queryString.stringify({
         limit,
         offset: this.offset,
         ...parsedUrl.query
       })
       const apiUrlWithParams = `${parsedUrl.url}?${stringifiedParams}`
       this.$store.dispatch(actionTypes.getProducts, {apiUrl: apiUrlWithParams})
+          .catch(error => {
+            console.error(error)
+            this.error = true
+          })
     }
   }
 }
 </script>
+<style>
+.info {
+  color: #fff;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+h3 {
+  color: #000;
+  margin-bottom: 5px;
+}
+
+p {
+  color: #000;
+  margin-bottom: 5px;
+}
+
+button {
+  background-color: #5cb85c;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+</style>
