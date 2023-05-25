@@ -26,6 +26,7 @@ const mutations = {
   [mutationTypes.getProductsStart](state) {
     state.isLoading = true;
     state.data = null;
+    state.message = null;
   },
   [mutationTypes.getProductsSuccess](state, payload) {
     state.isLoading = false;

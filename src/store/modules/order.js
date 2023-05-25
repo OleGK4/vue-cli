@@ -20,6 +20,7 @@ const mutations = {
   [mutationTypes.getOrdersStart](state) {
     state.isLoading = true;
     state.data = null;
+    state.error = null;
   },
   [mutationTypes.getOrdersSuccess](state, payload) {
     state.isLoading = false;
