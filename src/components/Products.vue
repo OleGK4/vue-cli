@@ -20,17 +20,17 @@
         </button>
       </div>
     </div>
+    <!--  Намного позже понял, что пагинации на back-end нет и мостить пагинацию на front-end - костыль,
+          потому пагинация и не работает от слова совсем, всегда возвращается полный массив объектов, имеющий в себе
+          уже использованные в отображении данные-->
+    <app-pagination
+        :total="totalCount"
+        :limit="limit"
+        :url="baseUrl"
+        :current-page="currentPage"
+    >
+    </app-pagination>
   </div>
-<!--  Намного позже понял, что пагинации на back-end нет и мостить пагинацию на front-end - костыль,
-      потому пагинация и не работает от слова совсем, всегда возвращается полный массив объектов, имеющий в себе
-      уже использованные в отображении данные-->
-  <app-pagination
-      :total="totalCount"
-      :limit="limit"
-      :url="baseUrl"
-      :current-page="currentPage"
-  >
-  </app-pagination>
 </template>
 
 

@@ -1,4 +1,5 @@
 import productsApi from "@/api/products";
+import cartApi from "@/api/cart";
 
 const state = {
   data: null,
@@ -11,14 +12,14 @@ export const mutationTypes = {
   getProductsSuccess: "[products] Get products success",
   getProductsFailure: "[products] Get products failure",
 
-  addCartStart: "[cart] Add cart start",
-  addToCartSuccess: "[cart] Add to cart success",
-  addToCartFailure: "[cart] Add to cart failure",
+  addCartStart: "[product] Add cart start",
+  addToCartSuccess: "[product] Add to cart success",
+  addToCartFailure: "[product] Add to cart failure",
 };
 
 export const actionTypes = {
   getProducts: "[products] Get products",
-  addToCart: "[cart] Add to cart",
+  addToCart: "[product] Add to cart",
 };
 
 const mutations = {
@@ -58,8 +59,17 @@ const actions = {
           context.commit(mutationTypes.getProductsSuccess, response.data);
           resolve(response.data);
         })
-        .catch(() => {
-          context.commit(mutationTypes.getProductsFailure);
+        .catch((result) => {
+          if (
+            result.response &&
+            result.response.data &&
+            result.response.data.error
+          ) {
+            context.commit(
+              mutationTypes.getProductsFailure,
+              result.response.data.error.message
+            );
+          }
         });
     });
   },
@@ -67,8 +77,8 @@ const actions = {
   [actionTypes.addToCart](context, productId) {
     return new Promise((resolve) => {
       context.commit(mutationTypes.addCartStart);
-      productsApi
-        .addToCart(productId)
+      cartApi
+        .increaseQuantity(productId)
         .then((response) => {
           context.commit(
             mutationTypes.addToCartSuccess,
@@ -77,10 +87,16 @@ const actions = {
           resolve(response.data);
         })
         .catch((result) => {
-          context.commit(
-            mutationTypes.addToCartFailure,
-            result.response.data.error.message
-          );
+          if (
+            result.response &&
+            result.response.data &&
+            result.response.data.error
+          ) {
+            context.commit(
+              mutationTypes.addToCartFailure,
+              result.response.data.error.message
+            );
+          }
         });
     });
   },

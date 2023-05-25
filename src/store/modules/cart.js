@@ -1,4 +1,5 @@
 import cartApi from "@/api/cart";
+import orderApi from "@/api/order";
 
 const state = {
   data: null,
@@ -11,14 +12,25 @@ export const mutationTypes = {
   getCartSuccess: "[cart] Get cart success",
   getCartFailure: "[cart] Get cart failure",
 
-  removeFromCartStart: "[cart] Remove from cart start",
-  removeFromCartSuccess: "[cart] Remove from cart success",
-  removeFromCartFailure: "[cart] Remove from cart failure",
+  decreaseQuantityStart: "[cart] Remove from cart start",
+  decreaseQuantitySuccess: "[cart] Remove from cart success",
+  decreaseQuantityFailure: "[cart] Remove from cart failure",
+
+  increaseQuantityStart: "[cart] Add to cart start",
+  increaseQuantitySuccess: "[cart] Add to cart success",
+  increaseQuantityFailure: "[cart] Add to cart failure",
+
+  orderStart: "[cart] Order start",
+  orderSuccess: "[cart] Order success",
+  orderFailure: "[cart] Order failure",
 };
 
 export const actionTypes = {
   getCart: "[cart] Get cart",
-  removeFromCart: "[cart] Remove from cart",
+  decreaseQuantity: "[cart] Remove from cart",
+  increaseQuantity: "[cart] Add to cart",
+
+  orderProducts: "[cart] Order products from cart",
 };
 
 const mutations = {
@@ -35,13 +47,41 @@ const mutations = {
     state.error = payload;
   },
 
-  [mutationTypes.removeFromCartStart](state) {
+  [mutationTypes.decreaseQuantityStart](state) {
     state.isLoading = true;
+    state.message = null;
   },
-  [mutationTypes.removeFromCartSuccess](state) {
+  [mutationTypes.decreaseQuantitySuccess](state, payload) {
     state.isLoading = false;
+    state.message = payload;
   },
-  [mutationTypes.removeFromCartFailure](state, payload) {
+  [mutationTypes.decreaseQuantityFailure](state, payload) {
+    state.isLoading = false;
+    state.error = payload;
+  },
+
+  [mutationTypes.increaseQuantityStart](state) {
+    state.isLoading = true;
+    state.message = null;
+  },
+  [mutationTypes.increaseQuantitySuccess](state, payload) {
+    state.isLoading = false;
+    state.message = payload;
+  },
+  [mutationTypes.increaseQuantityFailure](state, payload) {
+    state.isLoading = false;
+    state.error = payload;
+  },
+
+  [mutationTypes.orderStart](state) {
+    state.isLoading = true;
+    state.message = null;
+  },
+  [mutationTypes.orderSuccess](state, payload) {
+    state.isLoading = false;
+    state.message = payload;
+  },
+  [mutationTypes.orderFailure](state, payload) {
     state.isLoading = false;
     state.error = payload;
   },
@@ -52,33 +92,101 @@ const actions = {
     return new Promise((resolve) => {
       context.commit(mutationTypes.getCartStart);
       cartApi
-        .getProducts()
+        .getCart()
         .then((response) => {
-          context.commit(mutationTypes.getCartSuccess);
+          context.commit(mutationTypes.getCartSuccess, response.data);
           resolve(response.data);
         })
         .catch((result) => {
-          context.commit(
-            mutationTypes.getCartFailure,
-            result.response.data.error.errors
-          );
+          if (
+            result.response &&
+            result.response.data &&
+            result.response.data.error
+          ) {
+            context.commit(
+              mutationTypes.getCartFailure,
+              result.response.data.error.message
+            );
+          }
         });
     });
   },
-  [actionTypes.removeFromCart](context, productId) {
+  [actionTypes.decreaseQuantity](context, productId) {
     return new Promise((resolve) => {
-      context.commit(mutationTypes.removeFromCartStart);
+      context.commit(mutationTypes.decreaseQuantityStart);
       cartApi
-        .removeFromCart(productId)
+        .decreaseQuantity(productId)
         .then((response) => {
-          context.commit(mutationTypes.removeFromCartSuccess);
+          context.commit(
+            mutationTypes.decreaseQuantitySuccess,
+            response.data.data.message
+          );
           resolve(response.data);
         })
         .catch((result) => {
+          if (
+            result.response &&
+            result.response.data &&
+            result.response.data.error
+          ) {
+            context.commit(
+              mutationTypes.decreaseQuantityFailure,
+              result.response.data.error.message
+            );
+          }
+        });
+    });
+  },
+  [actionTypes.increaseQuantity](context, productId) {
+    return new Promise((resolve) => {
+      context.commit(mutationTypes.increaseQuantityStart);
+      cartApi
+        .increaseQuantity(productId)
+        .then((response) => {
           context.commit(
-            mutationTypes.removeFromCartFailure,
-            result.response.data.error.errors
+            mutationTypes.increaseQuantitySuccess,
+            response.data.data.message
           );
+          resolve(response.data);
+        })
+        .catch((result) => {
+          if (
+            result.response &&
+            result.response.data &&
+            result.response.data.error
+          ) {
+            context.commit(
+              mutationTypes.increaseQuantityFailure,
+              result.response.data.error.message
+            );
+          }
+        });
+    });
+  },
+
+  [actionTypes.orderProducts](context) {
+    return new Promise((resolve) => {
+      context.commit(mutationTypes.orderStart);
+      orderApi
+        .order()
+        .then((response) => {
+          context.commit(
+            mutationTypes.orderSuccess,
+            response.data.data.message
+          );
+          resolve(response.data);
+        })
+        .catch((result) => {
+          if (
+            result.response &&
+            result.response.data &&
+            result.response.data.error
+          ) {
+            context.commit(
+              mutationTypes.orderFailure,
+              result.response.data.error.message
+            );
+          }
         });
     });
   },

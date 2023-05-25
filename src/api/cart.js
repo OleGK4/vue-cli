@@ -4,11 +4,16 @@ const getCart = () => {
   return axios.get("/cart");
 };
 
-const removeFromCart = (productId) => {
+const increaseQuantity = (productId) => {
+  return axios.post(`/cart/${productId}`);
+};
+
+const decreaseQuantity = (productId) => {
   return axios.delete(`/cart/${productId}`);
 };
 
 export default {
   getCart,
-  removeFromCart,
+  increaseQuantity,
+  decreaseQuantity,
 };
